@@ -2,6 +2,7 @@
 using MySql.Data.Types;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -9,31 +10,38 @@ using System.Windows.Controls;
 
 namespace covid_dashboard
 {
+	/// <summary>
+	/// Static Class used to interact and gather data from a backend mysql server.
+	/// </summary>
 	static class OhioCovidDataService
 	{
 
-		private static string connString = "";
-
 		private static MySqlConnection conn = null;
-
+		/// <summary>
+		/// Opens the MySqlConnection object
+		/// </summary>
+		/// <returns>An open MySqlConnection object connected to the database determined in the App.config file</returns>
 		private static MySqlConnection openConnection()
 		{
+			//connect and open the connection if it is null or closed
 			if (conn == null || conn.State == System.Data.ConnectionState.Closed)
 			{
-				conn = new MySqlConnection(connString);
+				conn = new MySqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["ocdConn"].ConnectionString);
 				conn.Open();
 			}
 			return conn;
 		}
-
-		//approx. 46-51 seconds as of 30Sep2020
-		public static Dictionary<string, CountyData> getDataStartUp()
+		/// <summary>
+		/// For use upon startup of app. Pulls all the data from the backend and puts it in a Dictionary with the name of the county as the key and the corresponding CountyData object as the value
+		/// </summary>
+		/// <param name="sender">BackgroundWorker object to show progress of pulling data in a progress bar in WPF</param>
+		/// <returns>Dictionary holding all recorded data</returns>
+		public static Dictionary<string, CountyData> getDataStartUp(BackgroundWorker sender)
 		{
 			Dictionary<string, CountyData> allData = new Dictionary<string, CountyData>(88);
-			//string commandString = "select * from data where date_collected > '2020-09-09'";
-			string commandString = "select * from data";
+			
+			//get the number of rows to read in order to show progress bar in WPF
 			openConnection();
-			//get the number of rows to read
 			MySqlCommand countCommand = new MySqlCommand("select count(*) from data", conn);
 			MySqlDataReader countDataReader = countCommand.ExecuteReader();
 			int totalRows = 0;
@@ -42,12 +50,26 @@ namespace covid_dashboard
 				totalRows = Convert.ToInt32(countDataReader["count(*)"]);
 			}
 			countDataReader.Close();
+			//perform query to get all data
+			int count = 0;
+			int percentage = 0;
+			string commandString = "select * from data";
 			MySqlCommand command = new MySqlCommand(commandString, conn);
 			using (command)
 			{
 				MySqlDataReader dataReader = command.ExecuteReader();
 				while (dataReader.Read())
 				{
+					//update progress bar
+					double actualPercentage = (double)count / totalRows;
+					if ((int)actualPercentage > percentage)
+                    {
+						percentage = (int)actualPercentage;
+						sender.ReportProgress(percentage);
+                    }
+					count++;
+
+					//format and store data gathered from database
 					int dbCount = Convert.ToInt32(dataReader["count"]);
 					int dbHosp = Convert.ToInt32(dataReader["hosp_count"]);
 					int dbDeaths = Convert.ToInt32(dataReader["death_count"]);
@@ -77,26 +99,53 @@ namespace covid_dashboard
 			conn.Close();
 			return allData;
 		}
-		//approx. 6-8 seconds as of 30Sep2020
-		public static Dictionary<string, CountyData> getDataStartUp(DateTime date)
+		/// <summary>
+		/// Returns data for all counties on a specific date. 
+		/// </summary>
+		/// <param name="date">Date to pull data for, date is assumed to be after 1400 on the day of the date given or before 1400 on the next day</param>
+		/// <param name="startup">True if method is called upon startup of the app, will not return null in this case</param>
+		/// <returns>Dictionary holding all recorded data on a specific date. Null if no data is present for that date.</returns>
+		public static Dictionary<string, CountyData> getData(DateTime date, bool startup)
 		{
 			Dictionary<string, CountyData> allData = new Dictionary<string, CountyData>(88);
+			//format date portion of mysql query based on the date parameter
 			string datePortion = "date_collected='" + date.ToString("yyyy'-'MM'-'dd") + "' and time_collected>='14:00:00' or date_collected='"
 				  + date.AddDays(1).ToString("yyyy'-'MM'-'dd") + "' and time_collected<'14:00:00'";
 			openConnection();
-			//get the number of rows to read
-			MySqlCommand countCommand = new MySqlCommand("select count(*) from data where " + datePortion , conn);
-			MySqlDataReader countDataReader = countCommand.ExecuteReader();
-			if (countDataReader.Read())
-			{
-				if (!(Convert.ToInt32(countDataReader["count(*)"]) > 0))
-                {
-					date = date.AddDays(-1);
-					datePortion = "date_collected='" + date.ToString("yyyy'-'MM'-'dd") + "' and time_collected>='14:00:00' or date_collected='"
-						+ date.AddDays(1).ToString("yyyy'-'MM'-'dd") + "' and time_collected<'14:00:00'";
+			//Check to see if there is data for the date provided
+			while (true)
+            {
+				MySqlCommand countCommand = new MySqlCommand("select count(*) from data where " + datePortion , conn);
+				MySqlDataReader countDataReader = countCommand.ExecuteReader();
+				if (countDataReader.Read())
+				{
+					//if count is zero, there is no data for date provided
+					if (!(Convert.ToInt32(countDataReader["count(*)"]) > 0))
+					{
+						//if method is used at startup, go back one day until data is obtained
+						if (startup)
+						{
+							date = date.AddDays(-1);
+							datePortion = "date_collected='" + date.ToString("yyyy'-'MM'-'dd") + "' and time_collected>='14:00:00' or date_collected='"
+								+ date.AddDays(1).ToString("yyyy'-'MM'-'dd") + "' and time_collected<'14:00:00'";
+						}
+						//if method is not used at startup, return null
+						else
+						{
+							return null;
+						}
+					}
+					else
+                    {
+						//exit while loop after closing data reader
+						countDataReader.Close();
+						break;
+                    }
 				}
-			}
-			countDataReader.Close();
+				
+            }
+			
+			//query  and store data 
 			string commandString = "select * from data where " + datePortion;
 			MySqlCommand command = new MySqlCommand(commandString, conn);
 			using (command)
@@ -134,91 +183,7 @@ namespace covid_dashboard
 			return allData;
 		}
 
-		public static Dictionary<DateTime, int[]> getOhioData(DateTime selectedDate)
-		{
-			Dictionary<DateTime, int[]> data = new Dictionary<DateTime, int[]>();
-			DateTime nextDay = selectedDate.AddDays(1);
-			string datePortion = "date_collected>='" + selectedDate.ToString("yyyy'-'MM'-'dd") + "' and onset_date='" + selectedDate.ToString("yyyy'-'MM'-'dd") + "';";
-			string commandString = "select county, date_collected, count, death_count, hosp_count from data where " + datePortion;
-			openConnection();
 
-			//see if there is data for selected dat
-
-			MySqlCommand command = new MySqlCommand(commandString, conn);
-			using (command)
-			{
-				MySqlDataReader dataReader = command.ExecuteReader();
-				while (dataReader.Read())
-				{
-					int dbCount = Convert.ToInt32(dataReader["count"]);
-					int dbHosp = Convert.ToInt32(dataReader["hosp_count"]);
-					int dbDeaths = Convert.ToInt32(dataReader["death_count"]);
-					string dateCollected = Convert.ToString(dataReader["date_collected"]);
-					string county = Convert.ToString(dataReader["county"]);
-					int cutoff = dateCollected.LastIndexOf("2020") + 4;
-					dateCollected = dateCollected.Substring(0, cutoff).Trim();
-					DateTime collectedOn = DateTime.ParseExact(dateCollected, "M/d/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-					if (data.ContainsKey(collectedOn))
-					{
-						data[collectedOn][0] += dbCount;
-						data[collectedOn][1] += dbHosp;
-						data[collectedOn][2] += dbDeaths;
-					}
-					else
-					{
-						data.Add(collectedOn, new int[] { dbCount, dbHosp, dbDeaths });
-					}
-
-				}
-				dataReader.Close();
-			}
-			conn.Close();
-			return data;
-
-			
-
-		}
-
-		public static Dictionary<DateTime, int[]> getCountyData(DateTime selectedDate, string county)
-		{
-			Dictionary<DateTime, int[]> data = new Dictionary<DateTime, int[]>();
-			DateTime nextDay = selectedDate.AddDays(1);
-			string otherPortion = "county='" + county + "' and date_collected>='" + selectedDate.ToString("yyyy'-'MM'-'dd") + "' and onset_date='" + selectedDate.ToString("yyyy'-'MM'-'dd") + "';";
-			string commandString = "select county, date_collected, count, death_count, hosp_count from data where " + otherPortion;
-			openConnection();
-			MySqlCommand command = new MySqlCommand(commandString, conn);
-			using (command)
-			{
-				MySqlDataReader dataReader = command.ExecuteReader();
-				while (dataReader.Read())
-				{
-					int dbCount = Convert.ToInt32(dataReader["count"]);
-					int dbHosp = Convert.ToInt32(dataReader["hosp_count"]);
-					int dbDeaths = Convert.ToInt32(dataReader["death_count"]);
-					string dateCollected = Convert.ToString(dataReader["date_collected"]);
-					string countyName = Convert.ToString(dataReader["county"]);
-					int cutoff = dateCollected.LastIndexOf("2020") + 4;
-					dateCollected = dateCollected.Substring(0, cutoff).Trim();
-					DateTime collectedOn = DateTime.ParseExact(dateCollected, "M/d/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-					if (data.ContainsKey(collectedOn))
-					{
-						data[collectedOn][0] += dbCount;
-						data[collectedOn][1] += dbHosp;
-						data[collectedOn][2] += dbDeaths;
-					}
-					else
-					{
-						data.Add(collectedOn, new int[] { dbCount, dbHosp, dbDeaths });
-					}
-
-				}
-			}
-			conn.Close();
-			return data;
-
-
-
-		}
 
 		
 
