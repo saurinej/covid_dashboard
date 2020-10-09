@@ -6,6 +6,10 @@ namespace covid_dashboard
 {
     class CountyData
     {
+        //private Dictionary<DateTime, Dictionary<string, int>> dataByDay;
+        //private Dictionary<DateTime, Dictionary<string, int>> dayaByOnsetDay;
+
+
         //Holds the date and time data was collected as the key, and the collected data in a list as the value
         private Dictionary<DateTime, LinkedList<DataLine>> dataByDay;
         //Represents the name of the county the data corresponds to
@@ -47,9 +51,9 @@ namespace covid_dashboard
         }
 
         /// <summary>
-        /// Gets case, hospitalized, and death count totals for all categories and each individual sex and age category
+        /// Gets case, hospitalized, and death count totals for all categories and each individual sex and age category for the latest date.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Dictionary of string keys and integer values representing counts for corresponding county. Null if no data is present.</returns>
         public Dictionary<string, int> getCounts()
         {
             //return null if no data exists
@@ -200,8 +204,11 @@ namespace covid_dashboard
             return counts;
         }
 
-        //Method returns a list of counts for the county on the date given. Returns null if date does not exist in dictionary
-        //Returned list index 0 is case count, index 1 is hospitalized count, index 2 is death count
+        /// <summary>
+        /// Gets case, hospitalized, and death count totals for all categories and each individual sex and age category for the given date.
+        /// </summary>
+        /// <param name="date">Snapshot of data on given date</param>
+        /// <returns>Dictionary of string keys and integer values representing counts for corresponding county on the date given. Null if no data present for given day.</returns>
         public Dictionary<string, int> getCounts(DateTime date)
         {
             //add another day on the date since date may have default hour of zero
@@ -244,7 +251,6 @@ namespace covid_dashboard
                     unknownSexCaseCount += dL.CaseCount;
                     unknownSexHospCount += dL.HospCount;
                     unknownSexDeathCount += dL.DeathCount;
-
                 }
                 //age ranges
                 if (dL.AgeRange.Equals("0-19"))
@@ -302,7 +308,7 @@ namespace covid_dashboard
                     unknownAgeDeathCount += dL.DeathCount;
                 }
             }
-            //create and return list holding the counts
+            //create and return dictionary holding the counts
             Dictionary<string, int> counts = new Dictionary<string, int>()
             {
                 { "TotalCaseCount", caseCount },
@@ -348,7 +354,38 @@ namespace covid_dashboard
             return counts;
         }
 
-        //public Dictionary<DateTime, Dictionary<string, int>> getCountsOverTime(DateTime startDate, DateTime endDate)
+        /// <summary>
+        /// Gets counts from data collected each day. 
+        /// </summary>
+        /// <param name="startDate">No date before 06Apr2020.</param>
+        /// <param name="endDate">Last date data is required for.</param>
+        /// <returns>Dictionary with historical data date as the keys and a dictionary with categories as keys and count values as the value.</returns>
+        public Dictionary<DateTime, Dictionary<string, int>> getCountsOverTime(DateTime startDate, DateTime endDate)
+        {
+            //assume edge dates are for the specific day, meaning hour must be after 1400
+            if (startDate.Hour < 14) startDate = startDate.AddDays(1);
+            if (endDate.Hour < 14) endDate = endDate.AddDays(1);
+            //return null if there is no data
+            if (dataByDay.Count == 0) return null;
+            //return null if startDate is earlier than when historical data began collection
+            if (DateTime.Compare(startDate, new DateTime(2020, 4, 6)) < 0) return null;
+            //get counts for dates between and including startDate and endDate
+            Dictionary<DateTime, Dictionary<string, int>> historicalData = new Dictionary<DateTime, Dictionary<string, int>>();
+            DateTime iterateDate = startDate;
+            while (DateTime.Compare(iterateDate, endDate) <= 0)
+            {
+                if (dataByDay.ContainsKey(iterateDate))
+                {
+                    historicalData.Add(iterateDate, getCounts(iterateDate));
+                }
+                else
+                {
+                    historicalData.Add(iterateDate, null);
+                }
+            }
+
+            return historicalData;
+        }
 
     }
 }

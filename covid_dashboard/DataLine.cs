@@ -4,6 +4,9 @@ using System.Text;
 
 namespace covid_dashboard
 {
+    /// <summary>
+    /// Stores one line of data from https://coronavirus.ohio.gov/static/COVIDSummaryData.csv
+    /// </summary>
     class DataLine
     {
         public string Sex { get; private set; }
@@ -22,8 +25,6 @@ namespace covid_dashboard
             this.HospCount = hospCount;
             this.DeathCount = deathCount;
         }
-
-        //Dictionary<string, int> storage 
 
     }
 }
