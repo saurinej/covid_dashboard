@@ -8,8 +8,6 @@ specificity in terms of data groups. For example, age ranges and sex will viewab
 
 This program is meant for demonstration of capability only. It relies on a local server for pulling data; therefore, it will not be replicable.
 
-```
-
 ## Authors
 
 * **Joseph Saurine** - *Initial work* - (https://github.com/saurinej)
