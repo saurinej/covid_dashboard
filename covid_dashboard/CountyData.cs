@@ -20,7 +20,12 @@ namespace covid_dashboard
             this.CountyName = countyName;
             dataByDay = new Dictionary<DateTime, LinkedList<DataLine>>(new DateTimeComparer());
         }
-        //add a single line of data for a specific date
+        
+        /// <summary>
+        /// Adds a DataLine object for the corresponding date
+        /// </summary>
+        /// <param name="date">Date data was collected</param>
+        /// <param name="data">DataLine object to add</param>
         public void add(DateTime date, DataLine data)
         {
             if (dataByDay.ContainsKey(date))
@@ -37,7 +42,12 @@ namespace covid_dashboard
                 dataByDay.Add(date, newList);
             }
         }
-        //adds all the data for a specific date
+        
+        /// <summary>
+        /// Adds a list of DataLine objects for a specific date. 
+        /// </summary>
+        /// <param name="date">Date the data was collected.</param>
+        /// <param name="list">List of DataLine objects</param>
         public void add(DateTime date, LinkedList<DataLine> list)
         {
             if (dataByDay.ContainsKey(date))

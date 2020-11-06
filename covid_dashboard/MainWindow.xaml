@@ -6,11 +6,12 @@
         xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
         xmlns:local="clr-namespace:covid_dashboard"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Covid Dashboard" Height="Auto" Width="Auto" WindowStyle="SingleBorderWindow" WindowState="Maximized">
     <Window.Resources>
-        <local:MapViewModel x:Key="MapViewModel" />
+        
     </Window.Resources>
     <Grid>
-        <esri:MapView Map="{Binding Map, Source={StaticResource MapViewModel}}" />
+        <esri:MapView x:Name="mapView"/>
+        
     </Grid>
 </Window>
