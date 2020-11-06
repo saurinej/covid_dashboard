@@ -1,6 +1,7 @@
 ﻿using Esri.ArcGISRuntime.Data;
 using Esri.ArcGISRuntime.Mapping;
 using Esri.ArcGISRuntime.Symbology;
+using Esri.ArcGISRuntime.UI;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -50,15 +51,17 @@ namespace covid_dashboard
             //feature collection table to store just Ohio county data
             FeatureCollectionTable ohioTable = new FeatureCollectionTable(ohioData);
             SimpleLineSymbol countyOutline = new SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.Black, 1);
-            UniqueValueRenderer countyLineRenderer = new UniqueValueRenderer();
-            countyLineRenderer.DefaultSymbol = countyOutline;
+            UniqueValueRenderer countyLineRenderer = new UniqueValueRenderer
+            {
+                DefaultSymbol = countyOutline
+            };
             ohioTable.Renderer = countyLineRenderer;
 
             FeatureCollectionTable ohioTable2 = new FeatureCollectionTable(ohioData);
             //await ohioTable.LoadAsync();
             FeatureCollection ohioColl = new FeatureCollection();
             ohioColl.Tables.Add(ohioTable);
-            //ohioColl.Tables.Add(ohioTable2);
+            ohioColl.Tables.Add(ohioTable2);
             FeatureCollectionLayer collLay = new FeatureCollectionLayer(ohioColl);
 
             //_map = new Map(Basemap.CreateDarkGrayCanvasVector());
@@ -66,8 +69,34 @@ namespace covid_dashboard
             await _map.LoadAsync();
             _map.OperationalLayers.Add(collLay);
             _map.InitialViewpoint = new Viewpoint(40.170479, -82.608932, 2500000);
+            createCountyNameGraphics(ohioTable);
             mapView.Map = _map;
+            
 
+        }
+
+        private void createCountyNameGraphics(FeatureCollectionTable _ohioTable)
+        {
+            List<Feature> features = _ohioTable.ToList();
+            GraphicsOverlay nameOverlay = new GraphicsOverlay();
+            foreach (Feature f in features)
+            {
+                Esri.ArcGISRuntime.Geometry.Geometry geometry = f.Geometry;
+                TextSymbol name = new TextSymbol();
+                name.Text = (string)f.Attributes["NAME"];
+                name.Size = 12;
+                name.Color = Color.White;
+                name.BackgroundColor = Color.Black;
+                if (name.Text.Equals("Lucas"))
+                {
+                    name.VerticalAlignment = Esri.ArcGISRuntime.Symbology.VerticalAlignment.Bottom;
+                    name.HorizontalAlignment = Esri.ArcGISRuntime.Symbology.HorizontalAlignment.Right;
+                }
+                Graphic g = new Graphic(geometry, name);
+                nameOverlay.Graphics.Add(g);
+            }
+            
+            mapView.GraphicsOverlays.Add(nameOverlay);
         }
 
         /// <summary>
