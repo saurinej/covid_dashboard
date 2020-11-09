@@ -24,19 +24,23 @@ using Color = System.Drawing.Color;
 namespace covid_dashboard
 {
     /// <summary>
-    /// 
+    /// Methods for interacting with UI and model for map view of Ohio counties.
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
+        //The Map object to be displayed in the MainWindow, displays Ohio counties
         private Map _map;
+        //FeatureCollectionTable to hold Ohio county data queried from a service Url
+        private FeatureCollectionTable _ohioTable;
 
         public MainWindow()
         {
             InitializeComponent();
             Initialize();
         }
-
+        /// <summary>
+        /// Set up map of Ohio with county outlines and names
+        /// </summary>
         private async void Initialize()
         {
             //table to hold US County Data
@@ -49,19 +53,16 @@ namespace covid_dashboard
             //perform query 
             FeatureQueryResult ohioData = await countyDataTable.QueryFeaturesAsync(ohioDataParameters);
             //feature collection table to store just Ohio county data
-            FeatureCollectionTable ohioTable = new FeatureCollectionTable(ohioData);
+            _ohioTable = new FeatureCollectionTable(ohioData);
             SimpleLineSymbol countyOutline = new SimpleLineSymbol(SimpleLineSymbolStyle.Dash, Color.Black, 1);
             UniqueValueRenderer countyLineRenderer = new UniqueValueRenderer
             {
                 DefaultSymbol = countyOutline
             };
-            ohioTable.Renderer = countyLineRenderer;
-
-            FeatureCollectionTable ohioTable2 = new FeatureCollectionTable(ohioData);
-            //await ohioTable.LoadAsync();
+            _ohioTable.Renderer = countyLineRenderer;
+            
             FeatureCollection ohioColl = new FeatureCollection();
-            ohioColl.Tables.Add(ohioTable);
-            ohioColl.Tables.Add(ohioTable2);
+            ohioColl.Tables.Add(_ohioTable);
             FeatureCollectionLayer collLay = new FeatureCollectionLayer(ohioColl);
 
             //_map = new Map(Basemap.CreateDarkGrayCanvasVector());
@@ -69,13 +70,16 @@ namespace covid_dashboard
             await _map.LoadAsync();
             _map.OperationalLayers.Add(collLay);
             _map.InitialViewpoint = new Viewpoint(40.170479, -82.608932, 2500000);
-            createCountyNameGraphics(ohioTable);
+            createCountyNameGraphics();
             mapView.Map = _map;
             
 
         }
 
-        private void createCountyNameGraphics(FeatureCollectionTable _ohioTable)
+        /// <summary>
+        /// Creates and applies a GraphicsOverlay to the mapView that displays Ohio county names
+        /// </summary>
+        private void createCountyNameGraphics()
         {
             List<Feature> features = _ohioTable.ToList();
             GraphicsOverlay nameOverlay = new GraphicsOverlay();
@@ -85,8 +89,8 @@ namespace covid_dashboard
                 TextSymbol name = new TextSymbol();
                 name.Text = (string)f.Attributes["NAME"];
                 name.Size = 12;
-                name.Color = Color.White;
-                name.BackgroundColor = Color.Black;
+                name.Color = Color.Black;
+                name.FontWeight = Esri.ArcGISRuntime.Symbology.FontWeight.Bold;
                 if (name.Text.Equals("Lucas"))
                 {
                     name.VerticalAlignment = Esri.ArcGISRuntime.Symbology.VerticalAlignment.Bottom;
