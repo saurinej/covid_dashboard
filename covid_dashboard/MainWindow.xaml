@@ -1,4 +1,4 @@
-﻿<Window x:Class="covid_dashboard.MainWindow"
+﻿<Window x:Name="window" x:Class="covid_dashboard.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,10 +8,28 @@
         mc:Ignorable="d"
         Title="Covid Dashboard" Height="Auto" Width="Auto" WindowStyle="SingleBorderWindow" WindowState="Maximized">
     <Window.Resources>
-        
+
     </Window.Resources>
     <Grid>
-        <esri:MapView x:Name="mapView"/>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <esri:MapView x:Name="mapView" Grid.Column="0" Grid.Row="0"/>
+        <Grid Grid.Column="1" Grid.RowSpan="2" Background="#efefef">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="regionName" Grid.Row="0" Text="Ohio" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"></TextBlock>
+            <StackPanel Grid.Row="1">
+                
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
