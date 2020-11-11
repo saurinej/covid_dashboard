@@ -70,6 +70,8 @@ namespace covid_dashboard
             await _map.LoadAsync();
             _map.OperationalLayers.Add(collLay);
             _map.InitialViewpoint = new Viewpoint(40.170479, -82.608932, 2500000);
+            _map.MaxScale = 2500000;
+            _map.MinScale = 2500000;
             createCountyNameGraphics();
             mapView.Map = _map;
             
@@ -89,7 +91,8 @@ namespace covid_dashboard
                 TextSymbol name = new TextSymbol();
                 name.Text = (string)f.Attributes["NAME"];
                 name.Size = 12;
-                name.Color = Color.Black;
+                name.Color = Color.FromArgb(33, 71, 112);
+                name.OutlineColor = Color.White;
                 name.FontWeight = Esri.ArcGISRuntime.Symbology.FontWeight.Bold;
                 if (name.Text.Equals("Lucas"))
                 {

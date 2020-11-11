@@ -6,6 +6,7 @@
         xmlns:esri="http://schemas.esri.com/arcgis/runtime/2013"
         xmlns:local="clr-namespace:covid_dashboard"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Covid Dashboard" Height="Auto" Width="Auto" WindowStyle="SingleBorderWindow" WindowState="Maximized">
     <Window.Resources>
@@ -13,23 +14,155 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="795"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
+            <RowDefinition Height="877"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <esri:MapView x:Name="mapView" Grid.Column="0" Grid.Row="0"/>
-        <Grid Grid.Column="1" Grid.RowSpan="2" Background="#efefef">
+        <ScrollViewer Grid.Row="1" Background="#efefef">
+            <StackPanel Orientation="Vertical" Grid.Row="1" Background="#efefef">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Margin="5" FontSize="16" FontWeight="SemiBold">Selected Region</TextBlock>
+                    <TextBlock VerticalAlignment="Center" Margin="0,5,5,5" FontSize="16" FontWeight="Bold" Text="{Binding Text, ElementName=regionName}" Width="100"></TextBlock>
+                    <Button x:Name="btnCountyData" Margin="5" FontWeight="SemiBold" Padding="2" Height="30">View County Data</Button>
+                    <Button x:Name="btnOhioData" Margin="5" FontWeight="SemiBold" Padding="2" Height="30">View Ohio Data</Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                    <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Text="{Binding Text, ElementName=regionName}"></TextBlock>
+                    <TextBlock Margin ="0,5,0,5" FontSize="26" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center">General Data</TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold">Population</TextBlock>
+                        <TextBlock x:Name="tbPopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold">Male Population</TextBlock>
+                        <TextBlock x:Name="tbMalePopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold">Female Population</TextBlock>
+                        <TextBlock x:Name="tbFemalePopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid x:Name="grid" Grid.Column="1" Grid.RowSpan="2" Background="#efefef">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            <TextBlock x:Name="regionName" Grid.Row="0" Text="Ohio" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"></TextBlock>
-            <StackPanel Grid.Row="1">
-                
+            <TextBlock x:Name="regionName" Grid.Row="0" Text="Ohio" FontSize="34" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"></TextBlock>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Total Cases</TextBlock>
+                    <TextBlock x:Name="totalCases" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Total Hospitalizations</TextBlock>
+                    <TextBlock x:Name="totalHospitalizations" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Total Deaths</TextBlock>
+                    <TextBlock x:Name="totalDeaths" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Cases by Sex</TextBlock>
+                    <lvc:PieChart Name="chartCasesSex" Series="{Binding scCasesSex}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Hospitalizations by Sex</TextBlock>
+                    <lvc:PieChart Name="chartHospitalizationsSex" Series="{Binding scHospitalizationsSex}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Deaths by Sex</TextBlock>
+                    <lvc:PieChart Name="chartDeathsSex" Series="{Binding scDeathsSex}" LegendLocation="Right" InnerRadius="50" Margin="0, 15" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Cases by Age Range</TextBlock>
+                    <lvc:PieChart Name="chartCasesAge" Series="{Binding scCasesAge}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Hospitalizations by Age Range</TextBlock>
+                    <lvc:PieChart Name="chartHospitalizationsAge" Series="{Binding scHospitalizationsAge}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Deaths by Age Range</TextBlock>
+                    <lvc:PieChart Name="chartDeathsAge" Series="{Binding scDeathsAge}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Row="4" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock FontSize="28" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,5" Text="{Binding Text, ElementName=graphOption}"></TextBlock>
+                    <TextBlock FontSize="28" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,5"> - Daily Count</TextBlock>
+                </StackPanel>
+                <lvc:CartesianChart Series="{Binding scScatterPlot}" Margin="5" Padding="5">
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Title="Date"/>
+                    </lvc:CartesianChart.AxisX>
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis Title="{Binding lblYAxis}"/>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Name="txtStartDate" FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center" Visibility="Visible" Grid.IsSharedSizeScope="True">Start Date:</TextBlock>
+                    <DatePicker Name="dpStartDate" Margin="2,10,10,10" SelectedDate="1-2-2020" VerticalAlignment="Center" Visibility="Visible" DisplayDateStart="2020-01-01" DisplayDateEnd="{x:Static sys:DateTime.Now}"/>
+                    <Button Name="btnStartDateDecrement" Height="Auto" Margin="0,10,0,10" Padding="5,5,5,5" Width="Auto" VerticalAlignment="Top" FontFamily="Marlett" FontSize="14" FontWeight="SemiBold" Content="3"/>
+                    <Button Name="btnStartDateIncrement" Height="Auto" Margin="0,10,0,10" Padding="5,5,5,5" Width="Auto" VerticalAlignment="Top" FontFamily="Marlett" FontSize="14" FontWeight="SemiBold" Content="4"/>
+
+                    <TextBlock Name="txtSelectedDate" FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center" Visibility="Collapsed">See data progession for:</TextBlock>
+                    <DatePicker Name="dpSelectedDate" Margin="2,10,10,10" SelectedDate="2020-04-06" VerticalAlignment="Center" Visibility="Collapsed" DisplayDateStart="2020-04-06" DisplayDateEnd="{x:Static sys:DateTime.Now}"/>
+                    <Button Name="btnSelectedDateDecrement" Height="Auto" Margin="0,10,0,10" Padding="5,5,5,5" Width="Auto" Visibility="Collapsed" FontFamily="Marlett" FontSize="14" FontWeight="SemiBold" Content="3"/>
+                    <Button Name="btnSelectedDateIncrement" Height="Auto" Margin="0,10,0,10" Padding="5,5,5,5" Width="Auto" Visibility="Collapsed" FontFamily="Marlett" FontSize="14" FontWeight="SemiBold" Content="4"/>
+
+                    <TextBlock FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center">End Date:</TextBlock>
+                    <DatePicker Name="dpEndDate" Margin="2,10,10,10" VerticalAlignment="Center" DisplayDateStart="2020-01-03" DisplayDateEnd="{x:Static sys:DateTime.Now}" SelectedDate="{x:Static sys:DateTime.Now}"/>
+                    <Button Name="btnEndDateDecrement" Height="Auto" Margin="0,10,0,10" Padding="5,5,5,5" Width="Auto" VerticalAlignment="Top" FontFamily="Marlett" FontSize="14" FontWeight="SemiBold" Content="3"/>
+                    <Button Name="btnEndDateIncrement" Height="Auto" Margin="0,10,0,10" Padding="5,5,5,5" Width="Auto" VerticalAlignment="Top" FontFamily="Marlett" FontSize="14" FontWeight="SemiBold" Content="4"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center">View Graph By</TextBlock>
+                    <ComboBox Name="graphOption" Margin="2,10,10,10" Height="30" FontFamily="Ariel" FontSize="18" VerticalAlignment="Center">
+                        <ComboBoxItem Name="cbItemCases" IsSelected="True" VerticalAlignment="Center" FontSize="16">Cases</ComboBoxItem>
+                        <ComboBoxItem Name="cbItemHospitalizations" VerticalAlignment="Center" FontSize="16">Hospitalizations</ComboBoxItem>
+                        <ComboBoxItem Name="cbItemDeaths" VerticalAlignment="Center" FontSize="16">Deaths</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center">Count Display</TextBlock>
+                    <ComboBox Name="countOption" Margin="2,10,10,10" Height="30" FontFamily="Ariel" FontSize="18" VerticalAlignment="Center">
+                        <ComboBoxItem Name="cbDaily" IsSelected="True" VerticalAlignment="Center" FontSize="16">Daily Count</ComboBoxItem>
+                        <ComboBoxItem Name="cbCummulative" VerticalAlignment="Center" FontSize="16">Cummulative Count</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center">Sex</TextBlock>
+                    <ComboBox Name="sexOption" Margin="2,10,10,10" Height="30" FontFamily="Ariel" FontSize="18" VerticalAlignment="Center">
+                        <ComboBoxItem Name="cbAllSexes" IsSelected="True" VerticalAlignment="Center" FontSize="16">All</ComboBoxItem>
+                        <ComboBoxItem Name="cbMaleSex" VerticalAlignment="Center" FontSize="16">Male</ComboBoxItem>
+                        <ComboBoxItem Name="cbFemaleSex" VerticalAlignment="Center" FontSize="16">Female</ComboBoxItem>
+                        <ComboBoxItem Name="cbUnknownSex" VerticalAlignment="Center" FontSize="16">Unknown</ComboBoxItem>
+                    </ComboBox>
+                    <TextBlock FontSize="14" Foreground="#214770" FontWeight="SemiBold" Margin="5" VerticalAlignment="Center">Age Range</TextBlock>
+                    <ComboBox Name="ageOption" Margin="2,10,10,10" Height="30" FontFamily="Ariel" FontSize="18" VerticalAlignment="Center">
+                        <ComboBoxItem Name="cbAllAges" IsSelected="True" VerticalAlignment="Center" FontSize="16">All</ComboBoxItem>
+                        <ComboBoxItem Name="cb0To19" VerticalAlignment="Center" FontSize="16">0-19</ComboBoxItem>
+                        <ComboBoxItem Name="cb20To29" VerticalAlignment="Center" FontSize="16">20-29</ComboBoxItem>
+                        <ComboBoxItem Name="cb30To39" VerticalAlignment="Center" FontSize="16">30-39</ComboBoxItem>
+                        <ComboBoxItem Name="cb40To49" VerticalAlignment="Center" FontSize="16">40-49</ComboBoxItem>
+                        <ComboBoxItem Name="cb50To59" VerticalAlignment="Center" FontSize="16">50-59</ComboBoxItem>
+                        <ComboBoxItem Name="cb60To69" VerticalAlignment="Center" FontSize="16">60-69</ComboBoxItem>
+                        <ComboBoxItem Name="cb70To79" VerticalAlignment="Center" FontSize="16">70-79</ComboBoxItem>
+                        <ComboBoxItem Name="cb80Plus" VerticalAlignment="Center" FontSize="16">80+</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>
