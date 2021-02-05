@@ -128,6 +128,7 @@ namespace covid_dashboard
 							date = date.AddDays(-1);
 							datePortion = "date_collected='" + date.ToString("yyyy'-'MM'-'dd") + "' and time_collected>='14:00:00' or date_collected='"
 								+ date.AddDays(1).ToString("yyyy'-'MM'-'dd") + "' and time_collected<'14:00:00'";
+							countDataReader.Close();
 						}
 						//if method is not used at startup, return null
 						else
@@ -162,7 +163,7 @@ namespace covid_dashboard
 					string sex = Convert.ToString(dataReader["sex"]);
 					string ageRange = Convert.ToString(dataReader["age_range"]);
 					string county = Convert.ToString(dataReader["county"]);
-					int cutoff = dateCollected.LastIndexOf("2020") + 4;
+					int cutoff = dateCollected.LastIndexOf("2021") + 4;
 					dateCollected = dateCollected.Substring(0, cutoff).Trim();
 					dateCollected += " " + timeCollected;
 					DateTime collectedOn = DateTime.ParseExact(dateCollected, "M/d/yyyy HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);

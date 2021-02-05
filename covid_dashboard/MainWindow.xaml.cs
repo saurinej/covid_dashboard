@@ -47,7 +47,7 @@ namespace covid_dashboard
             mapView.GeoViewTapped += MapView_GeoViewTapped;
             //data = OhioCovidDataService.getDataStartUp(); for progress bar implementation
             data = OhioCovidDataService.getData(DateTime.Now, true);
-
+            InitializeDataStartUp();
         }
 
         /// <summary>
@@ -199,7 +199,219 @@ namespace covid_dashboard
                     DataLabels = true
                 }
             };
-
+            chartHospitalizationsSex.Series = new SeriesCollection
+            {
+                new PieSeries
+                {
+                    Title = "Male Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(maleSexHospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Female Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(femaleSexHospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Unknown Sex Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(unknownSexHospCount) },
+                    DataLabels = true
+                }
+            };
+            chartDeathsSex.Series = new SeriesCollection
+            {
+                new PieSeries
+                {
+                    Title = "Male Deaths",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(maleSexDeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Female Deaths",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(femaleSexDeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Unknown Sex Deaths",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(unknownSexDeathCount) },
+                    DataLabels = true
+                }
+            };
+            chartCasesAge.Series = new SeriesCollection
+            {
+                new PieSeries
+                {
+                    Title = "0-19 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age0To19CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "20-29 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age20To29CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "30-39 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age30To39CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "40-49 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age40To49CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "50-59 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age50To59CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "60-69 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age60To69CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "70-79 Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age70To79CaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "80+ Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age80PlusCaseCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Unknown Age Cases",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(unknownAgeCaseCount) },
+                    DataLabels = true
+                }
+            };
+            chartHospitalizationsAge.Series = new SeriesCollection
+            {
+                new PieSeries
+                {
+                    Title = "0-19 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age0To19HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "20-29 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age20To29HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "30-39 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age30To39HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "40-49 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age40To49HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "50-59 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age50To59HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "60-69 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age60To69HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "70-79 Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age70To79HospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "80+ Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age80PlusHospCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Unknown Age Hosp",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(unknownAgeHospCount) },
+                    DataLabels = true
+                }
+            };
+            chartDeathsAge.Series = new SeriesCollection
+            {
+                new PieSeries
+                {
+                    Title = "0-19 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age0To19DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "20-29 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age20To29DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "30-39 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age30To39DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "40-49 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age40To49DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "50-59 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age50To59DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "60-69 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age60To69DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "70-79 Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age70To79DeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "80+ Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(age80PlusDeathCount) },
+                    DataLabels = true
+                },
+                new PieSeries
+                {
+                    Title = "Unknown Age Death",
+                    Values = new ChartValues<ObservableValue> { new ObservableValue(unknownAgeDeathCount) },
+                    DataLabels = true
+                }
+            };
 
         }
 

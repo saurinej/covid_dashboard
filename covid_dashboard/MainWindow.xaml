@@ -77,29 +77,29 @@
             <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center">
                 <StackPanel Orientation="Vertical" Margin="5">
                     <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Cases by Sex</TextBlock>
-                    <lvc:PieChart Name="chartCasesSex" Series="{Binding scCasesSex}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                    <lvc:PieChart Name="chartCasesSex" Series="{Binding scCasesSex}" LegendLocation="Bottom" InnerRadius="10" Margin="15" Padding="15" MinWidth="250" MinHeight="150"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5">
                     <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Hospitalizations by Sex</TextBlock>
-                    <lvc:PieChart Name="chartHospitalizationsSex" Series="{Binding scHospitalizationsSex}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                    <lvc:PieChart Name="chartHospitalizationsSex" Series="{Binding scHospitalizationsSex}" LegendLocation="Bottom" InnerRadius="10" Margin="15" MinWidth="250" MinHeight="150"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5">
                     <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Deaths by Sex</TextBlock>
-                    <lvc:PieChart Name="chartDeathsSex" Series="{Binding scDeathsSex}" LegendLocation="Right" InnerRadius="50" Margin="0, 15" />
+                    <lvc:PieChart Name="chartDeathsSex" Series="{Binding scDeathsSex}" LegendLocation="Bottom" InnerRadius="10" Margin="15" MinWidth="250" MinHeight="150" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="3" HorizontalAlignment="Center">
                 <StackPanel Orientation="Vertical" Margin="5">
                     <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Cases by Age Range</TextBlock>
-                    <lvc:PieChart Name="chartCasesAge" Series="{Binding scCasesAge}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                    <lvc:PieChart Name="chartCasesAge" Series="{Binding scCasesAge}" LegendLocation="Bottom" InnerRadius="20" Margin="0,15" MinWidth="250" MinHeight="200" />
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5">
                     <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Hospitalizations by Age Range</TextBlock>
-                    <lvc:PieChart Name="chartHospitalizationsAge" Series="{Binding scHospitalizationsAge}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                    <lvc:PieChart Name="chartHospitalizationsAge" Series="{Binding scHospitalizationsAge}" LegendLocation="Bottom" InnerRadius="20" Margin="0,15" MinWidth="250" MinHeight="200"/>
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Margin="5">
                     <TextBlock FontSize="26" Foreground="#214770" FontWeight="SemiBold">Deaths by Age Range</TextBlock>
-                    <lvc:PieChart Name="chartDeathsAge" Series="{Binding scDeathsAge}" LegendLocation="Right" InnerRadius="50" Margin="0,15" />
+                    <lvc:PieChart Name="chartDeathsAge" Series="{Binding scDeathsAge}" LegendLocation="Bottom" InnerRadius="20" Margin="0,15" MinWidth="250" MinHeight="200" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Row="4" Orientation="Vertical">
