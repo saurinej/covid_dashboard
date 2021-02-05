@@ -28,7 +28,7 @@
                     <TextBlock VerticalAlignment="Center" Margin="5" FontSize="16" FontWeight="SemiBold">Selected Region</TextBlock>
                     <TextBlock VerticalAlignment="Center" Margin="0,5,5,5" FontSize="16" FontWeight="Bold" Text="{Binding Text, ElementName=regionName}" Width="100"></TextBlock>
                     <Button x:Name="btnCountyData" Margin="5" FontWeight="SemiBold" Padding="2" Height="30">View County Data</Button>
-                    <Button x:Name="btnOhioData" Margin="5" FontWeight="SemiBold" Padding="2" Height="30">View Ohio Data</Button>
+                    <Button x:Name="btnOhioData" Margin="5" FontWeight="SemiBold" Padding="2" Height="30" Click="btnOhioData_Click">View Ohio Data</Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                     <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Text="{Binding Text, ElementName=regionName}"></TextBlock>
@@ -37,15 +37,15 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold">Population</TextBlock>
-                        <TextBlock x:Name="tbPopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                        <TextBlock x:Name="tbPopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">11730000</TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold">Male Population</TextBlock>
-                        <TextBlock x:Name="tbMalePopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                        <TextBlock x:Name="tbMalePopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">5512000</TextBlock>
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <TextBlock Margin="5" FontSize="26" Foreground="#214770" FontWeight="SemiBold">Female Population</TextBlock>
-                        <TextBlock x:Name="tbFemalePopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">###</TextBlock>
+                        <TextBlock x:Name="tbFemalePopulation" FontSize="24" Foreground="#4882ae" HorizontalAlignment="Center">5840000</TextBlock>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -105,7 +105,7 @@
             <StackPanel Grid.Row="4" Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBlock FontSize="28" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,5" Text="{Binding Text, ElementName=graphOption}"></TextBlock>
-                    <TextBlock FontSize="28" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,5"> - Daily Count</TextBlock>
+                    <TextBlock FontSize="28" Foreground="#214770" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="5,5">Daily Count</TextBlock>
                 </StackPanel>
                 <lvc:CartesianChart Series="{Binding scScatterPlot}" Margin="5" Padding="5">
                     <lvc:CartesianChart.AxisX>
